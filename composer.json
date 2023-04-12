@@ -1,0 +1,22 @@
+{
+    "name": "phpqt/phpqt-demo",
+    "description": "A phpqt demo",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Phpqt\\PhpqtDemo\\": "src/",
+            "Qt\\": "phpqt/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nazmul Alam",
+            "email": "nazmulpcc@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "illuminate/support": "^10"
+    }
+}
