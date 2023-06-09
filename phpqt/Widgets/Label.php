@@ -2,10 +2,20 @@
 
 namespace Qt\Widgets;
 
+use Qt\Gui\Pixmap;
+
 if (! class_exists(TextEdit::class)) {
     class Label extends Widget
     {
         public function __construct(string $text = null)
+        {
+        }
+
+        public function pixmap(): Pixmap
+        {
+        }
+
+        public function setPixmap(Pixmap $pixmap)
         {
         }
 
