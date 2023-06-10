@@ -2,7 +2,9 @@
 
 namespace App\Downloader\Components;
 
+use App\Downloader\DownloadManager;
 use Qt\Core\Obj;
+use Qt\Core\Thread;
 use Qt\Widgets\BoxLayout;
 use Qt\Widgets\Label;
 use Qt\Widgets\Layout;
@@ -17,7 +19,10 @@ class FileDownloadCard extends Widget
 
     protected Widget $card;
 
-    public function __construct(protected string $url, protected string $filename, protected Layout $layout)
+    protected Thread $thread;
+    public int $percent;
+
+    public function __construct(protected string $url, protected string $filename, Layout $layout)
     {
         parent::__construct();
 
@@ -31,30 +36,42 @@ class FileDownloadCard extends Widget
             }
         ");
         $cardLayout = new BoxLayout(2, $this->card);
-        $cardLayout->addWidget(new Label($this->filename));
-        $cardLayout->addWidget($this->bar = new ProgressBar);
+        $fileLabel = new Label($this->filename);
+        $this->bar = new ProgressBar;
+        $cardLayout->addWidget($fileLabel);
+        $cardLayout->addWidget($this->bar);
         $this->card->setLayout($cardLayout);
-        $this->layout->addWidget($this->card);
+        $layout->addWidget($this->card);
     }
 
     public function start(): void
     {
-        $this->timerFd = $this->startTimer(1000, function () {
-            $value = $this->bar->value() + rand(1, 30);
-            if ($value >= 100){
-                $this->stop();
-                $this->bar->setValue(100);
-                $this->layout->removeWidget($this->card);
-                $this->card->setHidden(true);
-                unset($this->card);
-            }else{
-                $this->bar->setValue($value);
+        $this->thread = new Thread();
+        $manager = new DownloadManager($this->url, $this->filename);
+
+        $this->thread->onStarted(function () use ($manager) {
+            $this->percent = 0;
+            $manager->download(function ($downloaded, $total) {
+                $this->percent = (int) (($downloaded / $total) * 100);
+            });
+            $this->stop();
+        });
+        $this->thread->onFinished(function () {
+            $this->bar->setValue(100);
+        });
+        $this->thread->start();
+
+        // We use a timer to update the progress bar, because we can't update the UI from a thread
+        $this->timerFd = $this->startTimer(1000, function (){
+            $this->bar->setValue($this->percent);
+            if ($this->percent >= 100) {
+                $this->killTimer($this->timerFd);
             }
         });
     }
 
     public function stop(): void
     {
-        $this->killTimer($this->timerFd);
+        $this->thread->exit(0);
     }
 }

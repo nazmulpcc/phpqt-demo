@@ -8,12 +8,18 @@ use Phpqt\PhpqtDemo\Components\Button;
 use Phpqt\PhpqtDemo\Components\Input;
 use Phpqt\PhpqtDemo\Contracts\Page;
 use Qt\Widgets\LineEdit;
+use Qt\Widgets\VBoxLayout;
 use Qt\Widgets\Widget;
 
 class HomePage extends Widget implements Page
 {
     protected LineEdit $urlInput;
-    protected \Qt\Widgets\VBoxLayout $layout;
+
+    protected LineEdit $filenameInput;
+
+    protected VBoxLayout $layout;
+
+    protected $downloads = [];
 
     public function __construct(protected MainWindow $window)
     {
@@ -26,9 +32,10 @@ class HomePage extends Widget implements Page
     public function render(): void
     {
         $this->setObjectName('homePage');
-        $this->layout = new \Qt\Widgets\VBoxLayout();
+        $this->layout = new VBoxLayout();
 
-        $this->layout->addWidget($this->setUpDownloadForm());
+        $form = $this->setUpDownloadForm();
+        $this->layout->addWidget($form);
         $this->layout->addStretch();
 
         $this->setLayout($this->layout);
@@ -37,9 +44,16 @@ class HomePage extends Widget implements Page
     public function addFileToDownload(): void
     {
         $url = $this->urlInput->text();
+        $filename = $this->filenameInput->text();
 
-        $download = new FileDownloadCard($url, basename($url), $this->layout);
+        try {
+            $this->urlInput->clear();
+            $this->filenameInput->clear();
+        }catch (\Exception $e){}
+
+        $download = new FileDownloadCard($url, $filename, $this->layout);
         $download->start();
+        $this->downloads[] = $download;
     }
 
     protected function setUpDownloadForm(): Widget
@@ -49,14 +63,24 @@ class HomePage extends Widget implements Page
         $this->urlInput = Input::create('url')
             ->text('https://demo.com/file.zip')
             ->build();
+        $this->filenameInput = Input::create('filename')
+            ->text('file.zip')
+            ->build();
         $downloadButton = Button::create('downloadButton')
             ->text('Download')
             ->variant('primary')->build();
         $formLayout->addWidget($this->urlInput);
+        $formLayout->addWidget($this->filenameInput);
         $formLayout->addWidget($downloadButton);
         $formWidget->setLayout($formLayout);
 
         $downloadButton->onClicked(fn() => $this->addFileToDownload());
+        $this->urlInput->textChanged(function ($url){
+            $fragments = parse_url($url);
+            if ($fragments['path'] ?? false) {
+                $this->filenameInput->setText(basename($fragments['path']));
+            }
+        });
 
         return $formWidget;
     }

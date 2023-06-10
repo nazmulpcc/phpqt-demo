@@ -25,8 +25,9 @@ class CustomerPage extends Widget implements Page
             "Your password is very secret"
         ];
         $label = new Label($texts[0]);
+        $layout = new \Qt\Widgets\VBoxLayout;
         $this->setObjectName('customerPage');
-        $this->setLayout($layout = new \Qt\Widgets\VBoxLayout);
+        $this->setLayout($layout);
         $layout->addWidget($label);
 
         $index = 0;

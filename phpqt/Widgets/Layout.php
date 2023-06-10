@@ -10,7 +10,7 @@ if (! class_exists(Layout::class)) {
             //
         }
 
-        public function addWidget(Widget $widget)
+        public function addWidget(Widget &$widget)
         {
             //
         }
@@ -43,12 +43,12 @@ if (! class_exists(Layout::class)) {
             //
         }
 
-        public function removeWidget(Widget $widget)
+        public function removeWidget(Widget &$widget)
         {
             //
         }
 
-        public function setAlignment(Widget $widget, int $alignment)
+        public function setAlignment(Widget &$widget, int $alignment)
         {
             //
         }

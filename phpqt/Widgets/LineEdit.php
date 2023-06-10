@@ -73,5 +73,17 @@ if (! class_exists(LineEdit::class)) {
         public function setSelection(int $start, int $finish)
         {
         }
+
+        public function clear()
+        {
+        }
+
+        public function textChanged(callable $param)
+        {
+        }
+
+        public function textEdited(callable $param)
+        {
+        }
     }
 }

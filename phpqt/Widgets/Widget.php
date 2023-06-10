@@ -48,7 +48,7 @@ if (!class_exists(Widget::class)){
             //
         }
 
-        public function setLayout(Layout $layout)
+        public function setLayout(Layout &$layout)
         {
             //
         }

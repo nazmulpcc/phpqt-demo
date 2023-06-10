@@ -18,6 +18,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
+        "ext-curl": "*",
         "illuminate/support": "^10"
     }
 }

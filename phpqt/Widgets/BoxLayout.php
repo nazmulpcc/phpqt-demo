@@ -9,7 +9,7 @@ if (! class_exists(BoxLayout::class)) {
         {
         }
 
-        public function addWidget(Widget $widget, int $stretch = 0, int $alignment = 0)
+        public function addWidget(Widget &$widget, int $stretch = 0, int $alignment = 0)
         {
         }
 
