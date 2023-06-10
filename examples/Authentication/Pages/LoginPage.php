@@ -1,11 +1,12 @@
 <?php
 
-namespace Phpqt\PhpqtDemo\Pages;
+namespace App\Authentication\Pages;
 
+use App\Authentication\MainWindow;
 use Phpqt\PhpqtDemo\Components\Button;
 use Phpqt\PhpqtDemo\Components\Input;
+use Phpqt\PhpqtDemo\Contracts\Page;
 use Phpqt\PhpqtDemo\Helpers\Wrapper;
-use Phpqt\PhpqtDemo\Window;
 use Qt\Widgets\BoxLayout;
 use Qt\Widgets\Layout;
 use Qt\Widgets\LineEdit;
@@ -13,32 +14,38 @@ use Qt\Widgets\PushButton;
 use Qt\Widgets\VBoxLayout;
 use Qt\Widgets\Widget;
 
-class LoginPage extends Page
+class LoginPage extends Widget implements Page
 {
     protected LineEdit $username;
 
     protected LineEdit $password;
 
     protected Layout $layout;
+
     protected PushButton $submitButton;
+
     protected PushButton $registerButton;
-    protected Window $window;
+
+    public function __construct(protected MainWindow $window)
+    {
+        parent::__construct();
+    }
 
     public function handleLogin()
     {
         $this->submitButton->setDisabled(true);
         $user = $this->window->userRepository->login($this->username->text(), $this->password->text());
         if ($user) {
-            var_dump($user);
-            $this->window->setPage(new CustomerPage);
+            var_dump("Logged in as {$user['name']}");
+            $this->window->setPage(new CustomerPage($this->window));
         }else{
+            var_dump("Login Failed");
             $this->submitButton->setDisabled(false);
         }
     }
 
-    public function render(Window $window): void
+    public function render(): void
     {
-        $this->window = $window;
         $this->setObjectName('loginPage');
         $this->setUpUsernameField();
         $this->setUpPasswordField();
@@ -47,7 +54,7 @@ class LoginPage extends Page
         $this->setUpWrapper();
 
         $this->registerButton->onClicked(function() {
-            $this->window->setPage(new RegisterPage());
+            $this->window->setPage(new RegisterPage($this->window));
         });
         $this->submitButton->onClicked(fn() => $this->handleLogin());
     }

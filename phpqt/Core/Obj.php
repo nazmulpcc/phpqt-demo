@@ -65,7 +65,7 @@ if (! class_exists(Obj::class)) {
             //
         }
 
-        public function startTimer(int $interval, int|callable $timerType = 0, callable $callback = null)
+        public function startTimer(int $interval, int|callable $timerType = 0, callable $callback = null): int
         {
             //
         }

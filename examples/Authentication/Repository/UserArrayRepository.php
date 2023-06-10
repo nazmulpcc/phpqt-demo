@@ -1,8 +1,6 @@
 <?php
 
-namespace Phpqt\PhpqtDemo\Repository;
-
-use Phpqt\PhpqtDemo\Contracts\Repository\UserRepository;
+namespace App\Authentication\Repository;
 
 class UserArrayRepository implements UserRepository
 {
@@ -10,17 +8,22 @@ class UserArrayRepository implements UserRepository
 
     protected ?array $currentUser = null;
 
-    public function __construct()
+    public function __construct(protected string $usersFilePath)
     {
-        if (! file_exists(__DIR__ . '/../../data/users.json')) {
-            file_put_contents(__DIR__ . '/../../data/users.json', json_encode([]));
+        if (! file_exists($usersFilePath)) {
+            file_put_contents($usersFilePath, json_encode([]));
         }
-        $this->data = json_decode(file_get_contents(__DIR__ . '/../../data/users.json'), true);
+        $this->data = json_decode(file_get_contents($usersFilePath), true) ?: [];
     }
 
     public function __destruct()
     {
-        file_put_contents(__DIR__ . '/../../data/users.json', json_encode($this->data));
+        $this->saveData();
+    }
+
+    public function saveData(): void
+    {
+        file_put_contents($this->usersFilePath, json_encode($this->data));
     }
 
     public function login(string $email, string $password): false|array
@@ -51,12 +54,17 @@ class UserArrayRepository implements UserRepository
 
     public function register(array $data): bool
     {
+        // validate data
+        if (!strlen($data['name']) || !strlen($data['email']) || !strlen($data['password'])) {
+            return false;
+        }
         $this->data[] = [
             'id' => count($this->data) + 1,
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => $data['password'],
         ];
+        $this->saveData();
         return true;
     }
 

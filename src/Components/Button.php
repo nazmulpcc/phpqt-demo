@@ -40,10 +40,10 @@ class Button extends Component
 
     function build(): PushButton
     {
-        $registerButton = new PushButton($this->text ?? 'Button');
-        $registerButton->setObjectName($this->objectName);
+        $button = new PushButton($this->text ?? 'Button');
+        $button->setObjectName($this->objectName);
         $this->radius = $this->radius ?? '4px';
-        $registerButton->setStyleSheet("
+        $button->setStyleSheet("
             QPushButton#{$this->objectName} {
                 border: 1px solid #ccc;
                 border-radius: {$this->radius};
@@ -51,8 +51,8 @@ class Button extends Component
                 background-color: {$this->backgroundColor};
             }
         ");
-        $registerButton->setCursor(13);
+        $button->setCursor(13);
 
-        return $registerButton;
+        return $button;
     }
 }

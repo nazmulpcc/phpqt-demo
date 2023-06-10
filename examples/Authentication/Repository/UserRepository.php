@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpqt\PhpqtDemo\Contracts\Repository;
+namespace App\Authentication\Repository;
 
 interface UserRepository
 {

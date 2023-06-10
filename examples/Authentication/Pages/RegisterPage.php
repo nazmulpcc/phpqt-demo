@@ -1,7 +1,9 @@
 <?php
 
-namespace Phpqt\PhpqtDemo\Pages;
+namespace App\Authentication\Pages;
 
+use App\Authentication\MainWindow;
+use Phpqt\PhpqtDemo\Contracts\Page;
 use Phpqt\PhpqtDemo\Window;
 use Qt\Widgets\BoxLayout;
 use Qt\Widgets\Layout;
@@ -10,7 +12,7 @@ use Qt\Widgets\PushButton;
 use Qt\Widgets\VBoxLayout;
 use Qt\Widgets\Widget;
 
-class RegisterPage extends Page
+class RegisterPage extends Widget implements Page
 {
     protected LineEdit $fullName;
 
@@ -22,7 +24,12 @@ class RegisterPage extends Page
     protected PushButton $submitButton;
     protected PushButton $loginButton;
 
-    public function render(Window $window): void
+    public function __construct(protected MainWindow $window)
+    {
+        parent::__construct();
+    }
+
+    public function render(): void
     {
         $this->setObjectName('loginPage');
         $this->setUpFullNameField();
@@ -32,17 +39,20 @@ class RegisterPage extends Page
         $this->setUpLoginButton();
         $this->setUpWrapper();
 
-        $this->loginButton->onClicked(function () use ($window) {
-            $window->setPage(new LoginPage());
-        });
-        $this->submitButton->onClicked(function () use ($window) {
+        $this->loginButton->onClicked(fn() => $this->window->setPage(new LoginPage($this->window)));
+        $this->submitButton->onClicked(function () {
+            $this->submitButton->setDisabled(true);
             $data = [
                 'name' => $this->fullName->text(),
                 'email' => $this->username->text(),
                 'password' => $this->password->text(),
             ];
-            $window->userRepository->register($data);
-            $window->setPage(new LoginPage());
+            if($this->window->userRepository->register($data)) {
+                $this->window->setPage(new LoginPage($this->window));
+            }else{
+                var_dump("Registration Failed");
+                $this->submitButton->setDisabled(false);
+            }
         });
     }
 

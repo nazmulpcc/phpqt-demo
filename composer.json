@@ -6,7 +6,8 @@
     "autoload": {
         "psr-4": {
             "Phpqt\\PhpqtDemo\\": "src/",
-            "Qt\\": "phpqt/"
+            "Qt\\": "phpqt/",
+            "App\\": "examples"
         }
     },
     "authors": [
