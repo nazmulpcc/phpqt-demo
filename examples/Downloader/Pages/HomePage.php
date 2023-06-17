@@ -38,6 +38,9 @@ class HomePage extends Widget implements Page
         $this->layout->addWidget($form);
         $this->layout->addStretch();
 
+        // For demo purpose
+        $this->urlInput->setText("https://speed.hetzner.de/100MB.bin");
+
         $this->setLayout($this->layout);
     }
 
